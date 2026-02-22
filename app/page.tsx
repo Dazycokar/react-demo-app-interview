@@ -77,25 +77,25 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Posts</h1>
-          <p className="text-gray-600">Browse and search through our collection of posts</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Posts</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Browse and search through our collection of posts</p>
         </div>
 
         {/* Search Bar */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+              <Search className="h-4 sm:h-5 w-4 sm:w-5 text-gray-400" />
             </div>
             <input
               type="text"
               placeholder="Search posts by title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
             />
           </div>
         </div>
@@ -113,31 +113,31 @@ export default function HomePage() {
         {/* Posts List */}
         {!loading && !error && (
           <>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
               Showing {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'}
               {searchQuery && ` for "${searchQuery}"`}
             </p>
             
             {filteredPosts.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No posts found matching your search.</p>
+              <div className="text-center py-8 sm:py-12">
+                <p className="text-gray-500 text-sm sm:text-lg">No posts found matching your search.</p>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredPosts.map((post) => (
                   <Link
                     key={post.id}
                     href={`/detail/${post.id}`}
                     className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden"
                   >
-                    <div className="p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <div className="p-4 sm:p-6">
+                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                         {post.title}
                       </h2>
                       <p className="text-gray-600 text-sm line-clamp-3">
                         {post.body}
                       </p>
-                      <div className="mt-4 flex items-center text-blue-600 text-sm font-medium">
+                      <div className="mt-3 sm:mt-4 flex items-center text-blue-600 text-xs sm:text-sm font-medium">
                         Read more
                       </div>
                     </div>

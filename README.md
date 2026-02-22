@@ -87,18 +87,18 @@ react-demo-app/
 │   │       ├── LoadingSpinner.js
 │   │       └── NavBar.js
 │   ├── context/
-│   │   └── AuthContext.js  # Authentication context
+│   │   └── AuthContext.tsx  # Authentication context (TypeScript)
 │   ├── detail/[id]/
 │   │   └── page.js         # Detail page
 │   ├── login/
-│   │   └── page.js         # Login page
+│   │   └── page.tsx        # Login page (TypeScript)
 │   ├── services/
 │   │   └── api.js          # API service
 │   ├── utils/
 │   │   └── validation.js   # Validation utilities
-│   ├── globals.css         # Global styles
+│   ├── globals.css          # Global styles
 │   ├── layout.tsx          # Root layout
-│   ├── page.tsx            # Main page
+│   ├── page.tsx            # Main page (TypeScript)
 │   └── providers.js        # App providers
 ├── package.json
 └── README.md

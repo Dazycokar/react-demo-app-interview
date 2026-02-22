@@ -1,10 +1,10 @@
 'use client';
 
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
-import NavBar from '../../components/common/NavBar';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import { api } from '../../services/api';
@@ -12,19 +12,26 @@ import { ArrowLeft, User, Mail, FileText, MessageCircle } from 'lucide-react';
 
 export default function DetailPage({ params }) {
   const router = useRouter();
-  const { id } = params;
-  const { loading: authLoading } = useAuth();
+  const { id } = React.use(params);
+  const { user: authUser, loading: authLoading } = useAuth();
   const [post, setPost] = useState(null);
-  const [user, setUser] = useState(null);
+  const [author, setAuthor] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (id) {
+    if (!authLoading && !authUser) {
+      router.push('/login');
+    }
+  }, [authUser, authLoading, router]);
+
+  useEffect(() => {
+    if (id && authUser) {
       fetchPostDetails();
     }
-  }, [id]);
+  }, [id, authUser]);
 
   const fetchPostDetails = async () => {
     try {
@@ -35,8 +42,8 @@ export default function DetailPage({ params }) {
       setPost(postData);
       
       // Fetch user (author)
-      const userData = await api.getUserById(postData.userId);
-      setUser(userData);
+      const authorData = await api.getUserById(postData.userId);
+      setAuthor(authorData);
       
       // Fetch comments
       const commentsData = await api.getCommentsByPostId(id);
@@ -52,7 +59,6 @@ export default function DetailPage({ params }) {
   if (authLoading || loading) {
     return (
       <div>
-        <NavBar />
         <LoadingSpinner />
       </div>
     );
@@ -61,8 +67,7 @@ export default function DetailPage({ params }) {
   if (error) {
     return (
       <div>
-        <NavBar />
-        <main className="container mx-auto p-4">
+        <main className="container mx-auto px-4">
           <ErrorMessage message={error} />
           <Link href="/" className="inline-flex items-center text-blue-600 mt-4">
             <ArrowLeft className="w-4 h-4 mr-1" />
@@ -76,8 +81,7 @@ export default function DetailPage({ params }) {
   if (!post) {
     return (
       <div>
-        <NavBar />
-        <main className="container mx-auto p-4">
+        <main className="container mx-auto px-4">
           <ErrorMessage message="Post not found" />
           <Link href="/" className="inline-flex items-center text-blue-600 mt-4">
             <ArrowLeft className="w-4 h-4 mr-1" />
@@ -90,48 +94,47 @@ export default function DetailPage({ params }) {
 
   return (
     <div>
-      <NavBar />
-      <main className="container mx-auto p-4 max-w-4xl">
-        <Link href="/" className="inline-flex items-center text-blue-600 mb-6 hover:text-blue-800">
+      <main className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-4xl">
+        <Link href="/" className="inline-flex items-center text-blue-600 mb-4 sm:mb-6 hover:text-blue-800 text-sm sm:text-base">
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Main Page
         </Link>
 
         {/* Post Content */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.title}</h1>
-          <p className="text-gray-700 text-lg leading-relaxed">{post.body}</p>
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{post.title}</h1>
+          <p className="text-gray-700 text-base sm:text-lg leading-relaxed">{post.body}</p>
         </div>
 
         {/* Author Information */}
-        {user && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        {author && (
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
               <User className="w-5 h-5 mr-2" />
               Author Information
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="flex items-center">
-                <User className="w-4 h-4 text-gray-500 mr-2" />
-                <span className="text-gray-700">{user.name}</span>
+                <User className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
+                <span className="text-gray-700 text-sm sm:text-base">{author.name}</span>
               </div>
               <div className="flex items-center">
-                <Mail className="w-4 h-4 text-gray-500 mr-2" />
-                <a href={`mailto:${user.email}`} className="text-blue-600 hover:text-blue-800">
-                  {user.email}
+                <Mail className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
+                <a href={`mailto:${author.email}`} className="text-blue-600 hover:text-blue-800 text-sm sm:text-base truncate">
+                  {author.email}
                 </a>
               </div>
-              <div className="flex items-center">
-                <FileText className="w-4 h-4 text-gray-500 mr-2" />
-                <span className="text-gray-700">{user.company.name}</span>
+              <div className="flex items-center sm:col-span-2">
+                <FileText className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
+                <span className="text-gray-700 text-sm sm:text-base">{author.company.name}</span>
               </div>
             </div>
           </div>
         )}
 
         {/* Comments Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
             <MessageCircle className="w-5 h-5 mr-2" />
             Comments ({comments.length})
           </h2>
@@ -139,12 +142,12 @@ export default function DetailPage({ params }) {
           {comments.length === 0 ? (
             <p className="text-gray-500">No comments yet.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {comments.map(comment => (
-                <div key={comment.id} className="border-b border-gray-200 pb-4 last:border-0">
-                  <p className="font-medium text-gray-900">{comment.name}</p>
-                  <p className="text-sm text-gray-600 mb-2">{comment.email}</p>
-                  <p className="text-gray-700">{comment.body}</p>
+                <div key={comment.id} className="border-b border-gray-200 pb-3 sm:pb-4 last:border-0">
+                  <p className="font-medium text-gray-900 text-sm sm:text-base">{comment.name}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">{comment.email}</p>
+                  <p className="text-gray-700 text-sm sm:text-base">{comment.body}</p>
                 </div>
               ))}
             </div>

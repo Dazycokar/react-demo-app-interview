@@ -1,7 +1,7 @@
 'use client';
 
-import { AuthProvider } from './context/AuthContext';
-import NavBar from './components/common/NavBar';
+import { AuthProvider } from './context/AuthContext.tsx';
+import NavBar from './components/common/NavBar.js';
 
 export function Providers({ children }) {
   return (
