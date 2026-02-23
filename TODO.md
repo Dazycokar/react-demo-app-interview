@@ -1,16 +1,25 @@
-# TODO: Fix React Demo App
+# TODO - React Demo App Improvements
 
-## Task List
+## Phase 1: Folder Restructuring ✅
 
-- [x] Update Main Page (app/page.tsx) to fetch and display posts with search
-- [x] Update README.md with proper setup instructions
+- [x] Move `app/components` to root `components/` folder (created new components at root)
+- [x] Create reusable components: PostCard, CommentItem, SearchBar
+- [x] Update all import paths across files
 
-## Main Page Requirements
+## Phase 2: Server-Side Fetching ✅
 
-- [x] Fetch posts from jsonplaceholder.typicode.com on load
-- [x] Display a list of posts with title and excerpt
-- [x] Add a search bar that filters posts by title as user types
-- [x] Show LoadingSpinner while fetching
-- [x] Show ErrorMessage on error
-- [x] Protect route - redirect to /login if not authenticated
-- [x] Each item should link to /detail/[id]
+- [x] Convert `app/page.tsx` to Server Component with async data fetching
+- [x] Remove useEffect client-side fetching from home page
+- [x] Created ClientWrapper for auth and search functionality
+
+## Phase 3: Input Field Contrast Fixes ✅
+
+- [x] Fix login page phone input text color (gray-700)
+- [x] Fix home page search input text color (gray-700)
+
+## Phase 4: Reusable Components Creation ✅
+
+- [x] Create PostCard component in components/
+- [x] Create CommentItem component in components/
+- [x] Create SearchBar component in components/
+- [x] Update detail page to use CommentItem

@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-import { api } from '../../services/api';
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
+import ErrorMessage from '../../../components/common/ErrorMessage';
+import CommentItem from '../../../components/CommentItem';
+import { api } from '../../../app/services/api';
 import { ArrowLeft, User, Mail, FileText, MessageCircle } from 'lucide-react';
 
 export default function DetailPage({ params }) {
@@ -144,11 +145,7 @@ export default function DetailPage({ params }) {
           ) : (
             <div className="space-y-3 sm:space-y-4">
               {comments.map(comment => (
-                <div key={comment.id} className="border-b border-gray-200 pb-3 sm:pb-4 last:border-0">
-                  <p className="font-medium text-gray-900 text-sm sm:text-base">{comment.name}</p>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">{comment.email}</p>
-                  <p className="text-gray-700 text-sm sm:text-base">{comment.body}</p>
-                </div>
+                <CommentItem key={comment.id} comment={comment} />
               ))}
             </div>
           )}

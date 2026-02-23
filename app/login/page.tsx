@@ -70,7 +70,7 @@ export default function LoginPage() {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+254712345678"
-                className="appearance-none block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base sm:text-sm"
+                className="appearance-none block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base sm:text-sm text-gray-700"
                 disabled={loading}
               />
             </div>

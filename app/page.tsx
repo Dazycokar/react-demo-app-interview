@@ -1,13 +1,10 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from './context/AuthContext';
+import { Suspense } from 'react';
 import { api } from './services/api';
-import LoadingSpinner from './components/common/LoadingSpinner';
-import ErrorMessage from './components/common/ErrorMessage';
-import { Search } from 'lucide-react';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorMessage from '../components/common/ErrorMessage';
+import PostCard from '../components/PostCard';
+import SearchBar from '../components/SearchBar';
+import ClientWrapper from './ClientWrapper';
 
 // Define Post type
 interface Post {
@@ -17,137 +14,28 @@ interface Post {
   body: string;
 }
 
-export default function HomePage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
-  
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+// Server-side data fetching
+async function getPosts(): Promise<Post[]> {
+  const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
+    cache: 'no-store'
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch posts');
+  }
+  return res.json();
+}
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
+export default async function HomePage() {
+  let posts: Post[] = [];
+  let error = '';
 
-  // Fetch posts from API
-  useEffect(() => {
-    if (user) {
-      fetchPosts();
-    }
-  }, [user]);
-
-  // Filter posts based on search query
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredPosts(posts);
-    } else {
-      const filtered = posts.filter(post =>
-        post.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredPosts(filtered);
-    }
-  }, [searchQuery, posts]);
-
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const data = await api.getPosts();
-      setPosts(data);
-      setFilteredPosts(data);
-    } catch (err) {
-      setError('Failed to load posts. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (authLoading || !user) {
-    return (
-      <div className="min-h-screen bg-gray-100">
-        <LoadingSpinner />
-      </div>
-    );
+  try {
+    posts = await getPosts();
+  } catch (e) {
+    error = 'Failed to load posts. Please try again.';
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <main className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Posts</h1>
-          <p className="text-gray-600 text-sm sm:text-base">Browse and search through our collection of posts</p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="mb-4 sm:mb-6">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 sm:h-5 w-4 sm:w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search posts by title..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
-            />
-          </div>
-        </div>
-
-        {/* Loading State */}
-        {loading && (
-          <LoadingSpinner />
-        )}
-
-        {/* Error State */}
-        {error && (
-          <ErrorMessage message={error} />
-        )}
-
-        {/* Posts List */}
-        {!loading && !error && (
-          <>
-            <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-              Showing {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'}
-              {searchQuery && ` for "${searchQuery}"`}
-            </p>
-            
-            {filteredPosts.length === 0 ? (
-              <div className="text-center py-8 sm:py-12">
-                <p className="text-gray-500 text-sm sm:text-lg">No posts found matching your search.</p>
-              </div>
-            ) : (
-              <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/detail/${post.id}`}
-                    className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden"
-                  >
-                    <div className="p-4 sm:p-6">
-                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {post.title}
-                      </h2>
-                      <p className="text-gray-600 text-sm line-clamp-3">
-                        {post.body}
-                      </p>
-                      <div className="mt-3 sm:mt-4 flex items-center text-blue-600 text-xs sm:text-sm font-medium">
-                        Read more
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </main>
-    </div>
+    <ClientWrapper initialPosts={posts} error={error} />
   );
 }
